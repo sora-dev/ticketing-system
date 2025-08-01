@@ -18,8 +18,9 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/tickets', require('./routes/tickets'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/knowledge-base', require('./routes/knowledgeBase'));
-app.use('/api/audit', require('./routes/audit')); // Add this line
+app.use('/api/audit', require('./routes/audit'));
 app.use('/api/system-config', systemConfigRoutes);
+app.use('/api/backup', require('./routes/backup')); // Add this line
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ticketing-system')

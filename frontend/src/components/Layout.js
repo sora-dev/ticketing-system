@@ -206,6 +206,16 @@ const Layout = () => {
               {user?.role === "admin" && (
                 <li>
                   <button
+                    className={`nav-item ${isActive("/admin/backup")}`}
+                    onClick={() => navigate("/admin/backup")}
+                  >
+                    🗄️ Database Backup
+                  </button>
+                </li>
+              )}
+              {user?.role === "admin" && (
+                <li>
+                  <button
                     className={`nav-item ${isActive("/admin/users")}`}
                     onClick={() => navigate("/admin/users")}
                   >
