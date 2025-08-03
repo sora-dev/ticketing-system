@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../utils/api';
 import './UserManagement.css';
 
 const UserManagement = () => {
@@ -36,7 +37,7 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/users', {
+      const response = await axios.get(`${API_BASE_URL}/api/users`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -51,7 +52,7 @@ const UserManagement = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/users', newUser, {
+      await axios.post(`${API_BASE_URL}/api/users`, newUser, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -68,7 +69,7 @@ const UserManagement = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/users/${selectedUser._id}`, editUser, {
+      await axios.put(`${API_BASE_URL}/api/users/${selectedUser._id}`, editUser, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -96,7 +97,7 @@ const UserManagement = () => {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:5000/api/users/${selectedUser._id}/password`, 
+      await axios.patch(`${API_BASE_URL}/api/users/${selectedUser._id}/password`, 
         { newPassword: passwordData.newPassword },
         {
           headers: {
@@ -136,7 +137,7 @@ const UserManagement = () => {
   const toggleUserStatus = async (userId, currentStatus) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:5000/api/users/${userId}`, 
+      await axios.patch(`${API_BASE_URL}/api/users/${userId}`, 
         { isActive: !currentStatus },
         {
           headers: {

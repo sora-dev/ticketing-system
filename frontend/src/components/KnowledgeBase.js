@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { API_BASE_URL } from '../utils/api';
 import "./KnowledgeBase.css";
 
 const KnowledgeBase = () => {
@@ -38,7 +39,7 @@ const KnowledgeBase = () => {
       if (selectedCategory !== "all") params.category = selectedCategory;
 
       const response = await axios.get(
-        "http://localhost:5000/api/knowledge-base",
+        `${API_BASE_URL}/api/knowledge-base`,
         { params }
       );
       setArticles(response.data.articles);
@@ -52,7 +53,7 @@ const KnowledgeBase = () => {
   const handleArticleClick = async (article) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/knowledge-base/${article._id}`
+        `${API_BASE_URL}/api/knowledge-base/${article._id}`
       );
       setSelectedArticle(response.data);
       setShowModal(true);
@@ -66,7 +67,7 @@ const KnowledgeBase = () => {
 
     try {
       await axios.post(
-        `http://localhost:5000/api/knowledge-base/${selectedArticle._id}/rate`,
+        `${API_BASE_URL}/api/knowledge-base/${selectedArticle._id}/rate`,
         {
           helpful,
         }

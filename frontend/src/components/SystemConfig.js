@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../utils/api';
 import './SystemConfig.css';
 
 const SystemConfig = () => {
@@ -23,7 +24,7 @@ const SystemConfig = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/system-config', {
+      const response = await axios.get(`${API_BASE_URL}/api/system-config`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setConfig(response.data);
@@ -42,7 +43,7 @@ const SystemConfig = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.put('http://localhost:5000/api/system-config', config, {
+      await axios.put(`${API_BASE_URL}/api/system-config`, config, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessage('System configuration updated successfully!');
@@ -61,7 +62,7 @@ const SystemConfig = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:5000/api/system-config/reset-lockouts', {}, {
+      const response = await axios.post(`${API_BASE_URL}/api/system-config/reset-lockouts`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessage(response.data.message);

@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../utils/api';
 import './DatabaseBackup.css';
 
 const DatabaseBackup = () => {
   const [backups, setBackups] = useState([]);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [description, setDescription] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showRestoreModal, setShowRestoreModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedBackup, setSelectedBackup] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     fetchBackups();
@@ -19,7 +23,7 @@ const DatabaseBackup = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/backup/list', {
+      const response = await axios.get(`${API_BASE_URL}/api/backup/list`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setBackups(response.data.backups);
@@ -35,7 +39,7 @@ const DatabaseBackup = () => {
     try {
       setCreating(true);
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:5000/api/backup/create', 
+      const response = await axios.post(`${API_BASE_URL}/api/backup/create`, 
         { description },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
@@ -55,7 +59,7 @@ const DatabaseBackup = () => {
   const downloadBackup = async (fileName) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/api/backup/download/${fileName}`, {
+      const response = await axios.get(`${API_BASE_URL}/api/backup/download/${fileName}`, {
         headers: { 'Authorization': `Bearer ${token}` },
         responseType: 'blob'
       });
@@ -82,7 +86,7 @@ const DatabaseBackup = () => {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/backup/${fileName}`, {
+      await axios.delete(`${API_BASE_URL}/api/backup/${fileName}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -100,7 +104,7 @@ const DatabaseBackup = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      await axios.post(`http://localhost:5000/api/backup/restore/${selectedBackup.fileName}`, {}, {
+      await axios.post(`${API_BASE_URL}/api/backup/restore/${selectedBackup.fileName}`, {}, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -115,6 +119,49 @@ const DatabaseBackup = () => {
     }
   };
 
+  const uploadBackup = async () => {
+    if (!selectedFile) {
+      alert('Please select a backup file to upload');
+      return;
+    }
+
+    try {
+      setUploading(true);
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('backupFile', selectedFile);
+
+      const response = await axios.post(`${API_BASE_URL}/api/backup/upload`, formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      alert('Backup uploaded successfully!');
+      setSelectedFile(null);
+      setShowUploadModal(false);
+      fetchBackups();
+    } catch (error) {
+      console.error('Error uploading backup:', error);
+      alert('Failed to upload backup: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.type === 'application/zip' || file.name.endsWith('.zip')) {
+        setSelectedFile(file);
+      } else {
+        alert('Please select a ZIP file');
+        event.target.value = '';
+      }
+    }
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
   };
@@ -123,13 +170,22 @@ const DatabaseBackup = () => {
     <div className="backup-container">
       <div className="backup-header">
         <h2>Database Backup Management</h2>
-        <button 
-          className="btn btn-primary"
-          onClick={() => setShowCreateModal(true)}
-          disabled={creating}
-        >
-          {creating ? 'Creating...' : '🗄️ Create Backup'}
-        </button>
+        <div className="header-buttons">
+          <button 
+            className="btn btn-secondary"
+            onClick={() => setShowUploadModal(true)}
+            disabled={uploading}
+          >
+            {uploading ? 'Uploading...' : 'Upload Backup'}
+          </button>
+          <button 
+            className="btn btn-primary"
+            onClick={() => setShowCreateModal(true)}
+            disabled={creating}
+          >
+            {creating ? 'Creating...' : 'Create Backup'}
+          </button>
+        </div>
       </div>
 
       <div className="backup-info">
@@ -194,7 +250,7 @@ const DatabaseBackup = () => {
                         onClick={() => downloadBackup(backup.fileName)}
                         title="Download Backup"
                       >
-                        📥
+                        <span className="btn-label">Download</span>
                       </button>
                       <button 
                         className="btn btn-sm btn-warning"
@@ -204,14 +260,14 @@ const DatabaseBackup = () => {
                         }}
                         title="Restore Backup"
                       >
-                        🔄
+                        <span className="btn-label">Restore</span>
                       </button>
                       <button 
                         className="btn btn-sm btn-danger"
                         onClick={() => deleteBackup(backup.fileName)}
                         title="Delete Backup"
                       >
-                        🗑️
+                        <span className="btn-label">Delete</span>
                       </button>
                     </td>
                   </tr>
@@ -315,6 +371,71 @@ const DatabaseBackup = () => {
                 disabled={loading}
               >
                 {loading ? 'Restoring...' : 'Yes, Restore Database'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Backup Modal */}
+      {showUploadModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h3>Upload Backup File</h3>
+              <button 
+                className="close-btn"
+                onClick={() => {
+                  setShowUploadModal(false);
+                  setSelectedFile(null);
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="upload-section">
+                <div className="file-input-wrapper">
+                  <input
+                    type="file"
+                    id="backup-file"
+                    accept=".zip"
+                    onChange={handleFileSelect}
+                    className="file-input"
+                  />
+                  <label htmlFor="backup-file" className="file-input-label">
+                    {selectedFile ? selectedFile.name : '📁 Choose ZIP file...'}
+                  </label>
+                </div>
+                {selectedFile && (
+                  <div className="file-info">
+                    <p><strong>Selected file:</strong> {selectedFile.name}</p>
+                    <p><strong>Size:</strong> {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</p>
+                  </div>
+                )}
+                <div className="upload-warning">
+                  <p>⚠️ Please ensure the backup file is a valid ZIP archive created by this system.</p>
+                  <p>The upload process will extract and validate the backup before making it available.</p>
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button 
+                className="btn btn-secondary"
+                onClick={() => {
+                  setShowUploadModal(false);
+                  setSelectedFile(null);
+                }}
+                disabled={uploading}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn btn-primary"
+                onClick={uploadBackup}
+                disabled={uploading || !selectedFile}
+              >
+                {uploading ? 'Uploading...' : 'Upload Backup'}
               </button>
             </div>
           </div>

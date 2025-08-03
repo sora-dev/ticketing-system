@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 const { exec } = require("child_process");
 const fs = require("fs");
 const path = require("path");
+const archiver = require("archiver");
+const multer = require("multer");
+const yauzl = require("yauzl");
 const { auth, adminAuth } = require("../middleware/auth");
 const { logAuditEvent } = require("../utils/auditLogger");
 const router = express.Router();
@@ -12,6 +15,33 @@ const backupDir = path.join(__dirname, "../backups");
 if (!fs.existsSync(backupDir)) {
   fs.mkdirSync(backupDir, { recursive: true });
 }
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, backupDir);
+  },
+  filename: (req, file, cb) => {
+    // Generate timestamp-based filename with .zip extension
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    cb(null, `uploaded-backup-${timestamp}.zip`);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    // Only allow zip files
+    if (file.mimetype === 'application/zip' || file.originalname.endsWith('.zip')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only ZIP files are allowed'), false);
+    }
+  },
+  limits: {
+    fileSize: 100 * 1024 * 1024 // 100MB limit
+  }
+});
 
 // Get database name from connection string
 const getDatabaseName = () => {
@@ -54,11 +84,11 @@ router.post("/create", auth, adminAuth, async (req, res) => {
         action: "backup_created",
         resource: "database",
         resourceId: backupFileName,
-        details: {
+        details: JSON.stringify({
           backupFileName,
           description: description || "Manual backup",
           size: `${fileSizeInMB} MB`,
-        },
+        }),
         req,
       });
 
@@ -112,8 +142,29 @@ router.get("/download/:fileName", auth, adminAuth, async (req, res) => {
       return res.status(404).json({ message: "Backup file not found" });
     }
 
-    // For now, just send the directory as a zip would require additional setup
-    res.json({ message: "Download functionality requires additional setup" });
+    // Set response headers for zip download
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}.zip"`);
+
+    // Create archiver instance
+    const archive = archiver('zip', {
+      zlib: { level: 9 } // Maximum compression
+    });
+
+    // Handle archiver errors
+    archive.on('error', (err) => {
+      console.error('Archive error:', err);
+      res.status(500).json({ message: 'Failed to create backup archive' });
+    });
+
+    // Pipe archive data to response
+    archive.pipe(res);
+
+    // Add the backup directory to the archive
+    archive.directory(filePath, false);
+
+    // Finalize the archive
+    await archive.finalize();
 
     // Log audit event
     await logAuditEvent({
@@ -127,6 +178,172 @@ router.get("/download/:fileName", auth, adminAuth, async (req, res) => {
   } catch (error) {
     console.error("Download backup error:", error);
     res.status(500).json({ message: "Failed to download backup" });
+  }
+});
+
+// Upload backup
+router.post("/upload", auth, adminAuth, upload.single('backupFile'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const uploadedFilePath = req.file.path;
+    const fileName = req.file.filename;
+    // Remove .zip extension for extraction directory name
+    const extractDirName = fileName.replace(/\.zip$/, '');
+    const extractPath = path.join(backupDir, extractDirName);
+
+    // Clean up any existing extraction directory
+    if (fs.existsSync(extractPath)) {
+      fs.rmSync(extractPath, { recursive: true, force: true });
+    }
+    
+    // Create fresh extraction directory
+    fs.mkdirSync(extractPath, { recursive: true });
+
+    // Extract the zip file using yauzl
+    yauzl.open(uploadedFilePath, { lazyEntries: true }, (err, zipfile) => {
+      if (err) {
+        console.error("Failed to open zip file:", err);
+        // Remove the uploaded zip file safely
+        try {
+          if (fs.existsSync(uploadedFilePath)) {
+            const stats = fs.statSync(uploadedFilePath);
+            if (stats.isFile()) {
+              fs.unlinkSync(uploadedFilePath);
+            }
+          }
+        } catch (unlinkError) {
+          console.error("Failed to remove uploaded file:", unlinkError);
+        }
+        // Clean up extraction directory
+        if (fs.existsSync(extractPath)) {
+          fs.rmSync(extractPath, { recursive: true, force: true });
+        }
+        return res.status(500).json({
+          message: "Failed to open backup file",
+          error: err.message,
+        });
+      }
+
+      zipfile.readEntry();
+      
+      zipfile.on("entry", (entry) => {
+        if (/\/$/.test(entry.fileName)) {
+          // Directory entry
+          const dirPath = path.join(extractPath, entry.fileName);
+          try {
+            if (!fs.existsSync(dirPath)) {
+              fs.mkdirSync(dirPath, { recursive: true });
+            }
+          } catch (err) {
+            console.error("Failed to create directory:", err);
+          }
+          zipfile.readEntry();
+        } else {
+          // File entry
+          zipfile.openReadStream(entry, (err, readStream) => {
+            if (err) {
+              console.error("Failed to read entry:", err);
+              zipfile.readEntry();
+              return;
+            }
+            
+            const filePath = path.join(extractPath, entry.fileName);
+            const fileDir = path.dirname(filePath);
+            
+            // Ensure directory exists
+            try {
+              if (!fs.existsSync(fileDir)) {
+                fs.mkdirSync(fileDir, { recursive: true });
+              }
+            } catch (err) {
+              console.error("Failed to create file directory:", err);
+              zipfile.readEntry();
+              return;
+            }
+            
+            const writeStream = fs.createWriteStream(filePath);
+            readStream.pipe(writeStream);
+            
+            writeStream.on('close', () => {
+              zipfile.readEntry();
+            });
+            
+            writeStream.on('error', (err) => {
+              console.error("Failed to write file:", err);
+              zipfile.readEntry();
+            });
+          });
+        }
+      });
+      
+      zipfile.on("end", async () => {
+        // Remove the uploaded zip file after extraction
+        fs.unlinkSync(uploadedFilePath);
+        
+        try {
+          // Get backup file size
+          const fileSizeInBytes = getDirectorySize(extractPath);
+          const fileSizeInMB = (fileSizeInBytes / (1024 * 1024)).toFixed(2);
+
+          // Log audit event
+          await logAuditEvent({
+            userId: req.user._id,
+            action: "backup_uploaded",
+            resource: "database",
+            resourceId: extractDirName,
+            details: JSON.stringify({ 
+              fileName: extractDirName,
+              originalName: req.file.originalname,
+              size: `${fileSizeInMB} MB`
+            }),
+            req,
+          });
+
+          res.status(201).json({
+            message: "Backup uploaded and extracted successfully",
+            fileName: extractDirName,
+            size: `${fileSizeInMB} MB`,
+            extractedTo: extractPath
+          });
+        } catch (auditError) {
+          console.error("Audit logging error:", auditError);
+          res.status(201).json({
+            message: "Backup uploaded and extracted successfully",
+            fileName: fileName,
+            extractedTo: extractPath
+          });
+        }
+      });
+      
+      zipfile.on("error", (err) => {
+        console.error("Extraction error:", err);
+        // Remove the uploaded zip file safely
+        try {
+          if (fs.existsSync(uploadedFilePath)) {
+            const stats = fs.statSync(uploadedFilePath);
+            if (stats.isFile()) {
+              fs.unlinkSync(uploadedFilePath);
+            }
+          }
+        } catch (unlinkError) {
+          console.error("Failed to remove uploaded file:", unlinkError);
+        }
+        // Clean up extraction directory if extraction failed
+        if (fs.existsSync(extractPath)) {
+          fs.rmSync(extractPath, { recursive: true, force: true });
+        }
+        res.status(500).json({
+          message: "Failed to extract backup file",
+          error: err.message,
+        });
+      });
+    });
+  } catch (error) {
+    console.error("Upload backup error:", error);
+    res.status(500).json({ message: "Failed to upload backup" });
   }
 });
 
@@ -148,7 +365,7 @@ router.delete("/:fileName", auth, adminAuth, async (req, res) => {
       action: "backup_deleted",
       resource: "database",
       resourceId: fileName,
-      details: { fileName },
+      details: JSON.stringify({ fileName }),
       req,
     });
 

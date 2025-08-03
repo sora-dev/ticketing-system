@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from '../utils/api';
 import "./Layout.css";
 
 const Layout = () => {
@@ -23,7 +24,7 @@ const Layout = () => {
 
       try {
         // Verify token with backend
-        const response = await axios.get('http://localhost:5000/api/auth/me', {
+        const response = await axios.get(`${API_BASE_URL}/api/auth/me`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -73,18 +74,12 @@ const Layout = () => {
     return null;
   }
 
-  // REMOVE THESE LINES (they cause infinite re-render):
-  // const userData = localStorage.getItem("user");
-  // if (userData) {
-  //   setUser(JSON.parse(userData));
-  // }
-
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
       if (token) {
         // Call backend logout endpoint to log the event
-        await axios.post('http://localhost:5000/api/auth/logout', {}, {
+        await axios.post(`${API_BASE_URL}/api/auth/logout`, {}, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -206,16 +201,6 @@ const Layout = () => {
               {user?.role === "admin" && (
                 <li>
                   <button
-                    className={`nav-item ${isActive("/admin/backup")}`}
-                    onClick={() => navigate("/admin/backup")}
-                  >
-                    🗄️ Database Backup
-                  </button>
-                </li>
-              )}
-              {user?.role === "admin" && (
-                <li>
-                  <button
                     className={`nav-item ${isActive("/admin/users")}`}
                     onClick={() => navigate("/admin/users")}
                   >
@@ -247,6 +232,16 @@ const Layout = () => {
               {user?.role === "admin" && (
                 <li>
                   <button
+                    className={`nav-item ${isActive("/admin/backup")}`}
+                    onClick={() => navigate("/admin/backup")}
+                  >
+                    🗄️ Database Backup
+                  </button>
+                </li>
+              )}
+              {user?.role === "admin" && (
+                <li>
+                  <button
                     className={`nav-item ${isActive("/admin/audit-log")}`}
                     onClick={() => navigate("/admin/audit-log")}
                   >
@@ -254,7 +249,8 @@ const Layout = () => {
                   </button>
                 </li>
               )}
-              {/* Add Reports module for all users */}
+              {/* Add Reports module for Admin Only */}
+              {(user?.role === "admin" || user?.role === "support") &&(
               <li>
                 <button
                   className={`nav-item ${isActive("/reports")}`}
@@ -263,6 +259,7 @@ const Layout = () => {
                   📊 Reports
                 </button>
               </li>
+              )}
               <li>
                 <button
                   className={`nav-item ${isActive("/tickets/create")}`}
@@ -280,6 +277,21 @@ const Layout = () => {
           <Outlet />
         </main>
       </div>
+
+      {/* Footer */}
+      <footer className="footer">
+        <div className="footer-content footer-dashboard">
+          <div className="footer-left">
+            <p>&copy; {new Date().getFullYear()} Rural Bank of Itogon
+                (Benguet), Inc. All rights reserved.</p>
+          </div>
+          <div className="footer-right">
+            <span>Version 1.0.0</span>
+            <span>•</span>
+            <span className="footer-note">For internal use only</span>
+          </div>
+        </div>
+      </footer>
 
       {/* Profile Settings Modal */}
       {showProfileModal && (
@@ -352,7 +364,7 @@ const ProfileModal = ({ user, onClose, onUpdate }) => {
         updateData.newPassword = formData.newPassword;
       }
 
-      const response = await fetch("http://localhost:5000/api/auth/profile", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

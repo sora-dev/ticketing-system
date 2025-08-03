@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { API_BASE_URL } from '../utils/api';
 import './AuditLog.css';
 
 const AuditLog = () => {
@@ -45,7 +47,7 @@ const AuditLog = () => {
         }
       });
 
-      const response = await fetch(`http://localhost:5000/api/audit?${queryParams}`, {
+      const response = await fetch(`${API_BASE_URL}/api/audit?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from '../utils/api';
 import './TicketDetail.css';
 
 const TicketDetail = () => {
@@ -19,7 +20,7 @@ const TicketDetail = () => {
   const fetchTicket = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/api/tickets/${id}`, {
+      const response = await axios.get(`${API_BASE_URL}/api/tickets/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -40,7 +41,7 @@ const TicketDetail = () => {
     setUpdatingStatus(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:5000/api/tickets/${id}`, 
+      await axios.patch(`${API_BASE_URL}/api/tickets/${id}`, 
         { status: newStatus },
         {
           headers: {
@@ -64,7 +65,7 @@ const TicketDetail = () => {
     setSubmittingComment(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`http://localhost:5000/api/tickets/${id}/comments`, 
+      const response = await axios.post(`${API_BASE_URL}/api/tickets/${id}/comments`, 
         { message: newComment },
         {
           headers: {

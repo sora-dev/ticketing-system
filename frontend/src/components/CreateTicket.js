@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from '../utils/api';
 import './CreateTicket.css';
 
 const CreateTicket = () => {
@@ -29,7 +31,7 @@ const CreateTicket = () => {
         return;
       }
 
-      await axios.post('http://localhost:5000/api/tickets', formData, {
+      await axios.post(`${API_BASE_URL}/api/tickets`, formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -85,15 +87,17 @@ const CreateTicket = () => {
             required
           >
             <option value="">Select Category</option>
-            <option value="account-management">Account Management</option>
-            <option value="transactions">Transactions</option>
-            <option value="cards">Cards & ATM</option>
-            <option value="loans">Loans & Credit</option>
-            <option value="technical-issues">Technical Issues</option>
+            <option value="hardware">Hardware</option>
+            <option value="network">Network</option>
+            <option value="software">Software</option>
+            <option value="printing">Printing</option>
+            <option value="login">Login</option>
+            <option value="email">Email</option>
+            <option value="access-request">Access Request</option>
+            <option value="system-error">System Error</option>
+            <option value="system-config">System Config</option>
             <option value="security">Security</option>
-            <option value="mobile-banking">Mobile Banking</option>
-            <option value="online-banking">Online Banking</option>
-            <option value="general">General Inquiry</option>
+            <option value="others">Others</option>
           </select>
         </div>
 

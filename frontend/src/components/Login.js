@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // Add this import
 import axios from 'axios';
+import { API_BASE_URL } from '../utils/api';
 import '../styles/Login.css';
 
 const Login = () => {
@@ -27,7 +28,7 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', formData);
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, formData);
       
       // Use AuthContext login method instead of direct localStorage
       login(response.data.token, response.data.user);

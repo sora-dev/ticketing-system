@@ -125,6 +125,59 @@
   background-color: #f8f9fa;
 }
 
+/* Footer */
+.footer {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 15px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-dashboard{
+  flex-direction: column;
+  line-height: 0.2;
+}
+
+.footer-left p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.footer-right span {
+  white-space: nowrap;
+}
+
+/* Responsive footer */
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+  
+  .footer-left p,
+  .footer-right {
+    font-size: 0.8rem;
+  }
+}
+
 /* Profile Modal */
 .modal-overlay {
   position: fixed;

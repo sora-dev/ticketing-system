@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { API_BASE_URL } from '../utils/api';
 import "./KnowledgeBaseAdmin.css";
 
 const KnowledgeBaseAdmin = () => {
@@ -41,7 +42,7 @@ const KnowledgeBaseAdmin = () => {
       const params = filter !== "all" ? { status: filter } : {};
 
       const response = await axios.get(
-        "http://localhost:5000/api/knowledge-base/admin/all",
+        `${API_BASE_URL}/api/knowledge-base/admin/all`,
         {
           headers: { Authorization: `Bearer ${token}` },
           params,
@@ -59,7 +60,7 @@ const KnowledgeBaseAdmin = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "http://localhost:5000/api/knowledge-base/admin/stats",
+        `${API_BASE_URL}/api/knowledge-base/admin/stats`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -77,8 +78,8 @@ const KnowledgeBaseAdmin = () => {
     try {
       const token = localStorage.getItem("token");
       const url = editingArticle
-        ? `http://localhost:5000/api/knowledge-base/admin/${editingArticle._id}`
-        : "http://localhost:5000/api/knowledge-base/admin";
+        ? `${API_BASE_URL}/api/knowledge-base/admin/${editingArticle._id}`
+        : `${API_BASE_URL}/api/knowledge-base/admin`;
 
       const method = editingArticle ? "put" : "post";
 
@@ -123,7 +124,7 @@ const KnowledgeBaseAdmin = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.delete(
-        `http://localhost:5000/api/knowledge-base/admin/${articleId}`,
+        `${API_BASE_URL}/api/knowledge-base/admin/${articleId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

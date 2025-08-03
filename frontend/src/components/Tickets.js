@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from '../utils/api';
 import './Tickets.css';
 
 const Tickets = () => {
@@ -17,7 +18,7 @@ const Tickets = () => {
   const fetchTickets = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/tickets', {
+      const response = await axios.get(`${API_BASE_URL}/api/tickets`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -34,7 +35,7 @@ const Tickets = () => {
     e.stopPropagation(); // Prevent card click when changing status
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:5000/api/tickets/${ticketId}`, 
+      await axios.patch(`${API_BASE_URL}/api/tickets/${ticketId}`, 
         { status: newStatus },
         {
           headers: {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../utils/api';
 import './Reports.css';
 
 const Reports = () => {
@@ -40,7 +41,7 @@ const Reports = () => {
   const fetchReportData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/api/tickets/reports', {
+      const response = await axios.get(`${API_BASE_URL}/api/tickets/reports`, {
         params: {
           startDate: dateRange.startDate,
           endDate: dateRange.endDate,
