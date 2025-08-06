@@ -6,7 +6,7 @@ const { logAuditEvent } = require('../utils/auditLogger');
 const router = express.Router();
 
 // Get all users (Admin only)
-router.get('/', adminAuth, async (req, res) => {
+router.get('/', auth, adminAuth, async (req, res) => {
   try {
     const users = await User.find().select('-password');
     res.json(users);
@@ -16,7 +16,7 @@ router.get('/', adminAuth, async (req, res) => {
 });
 
 // Create user (Admin only)
-router.post('/', adminAuth, async (req, res) => {
+router.post('/', auth, adminAuth, async (req, res) => {
   try {
     const { name, email, password, role, department } = req.body;
     
@@ -43,7 +43,7 @@ router.post('/', adminAuth, async (req, res) => {
 });
 
 // Update user status (Admin only)
-router.patch('/:id', adminAuth, async (req, res) => {
+router.patch('/:id', auth, adminAuth, async (req, res) => {
   try {
     const { isActive } = req.body;
     const user = await User.findByIdAndUpdate(
@@ -63,7 +63,7 @@ router.patch('/:id', adminAuth, async (req, res) => {
 });
 
 // Update user profile (Admin only)
-router.put('/:id', adminAuth, async (req, res) => {
+router.put('/:id', auth, adminAuth, async (req, res) => {
   try {
     const { name, email, role, department } = req.body;
     const userId = req.params.id;
@@ -102,7 +102,7 @@ router.put('/:id', adminAuth, async (req, res) => {
 });
 
 // Change user password (Admin only)
-router.patch('/:id/password', adminAuth, async (req, res) => {
+router.patch('/:id/password', auth, adminAuth, async (req, res) => {
   try {
     const { newPassword } = req.body;
     const userId = req.params.id;

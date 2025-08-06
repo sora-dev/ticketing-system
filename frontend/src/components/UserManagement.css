@@ -17,7 +17,7 @@
 }
 
 .btn-primary {
-  background-color: #667eea;
+  background-color: #0F4C75;
   color: white;
   padding: 12px 24px;
   border: none;
@@ -34,9 +34,9 @@
 
 .btn-secondary {
   background-color: transparent;
-  color: #667eea;
+  color: #0F4C75;
   padding: 8px 16px;
-  border: 1px solid #667eea;
+  border: 1px solid #0F4C75;
   border-radius: 4px;
   font-size: 0.9rem;
   cursor: pointer;
@@ -44,7 +44,7 @@
 }
 
 .btn-secondary:hover {
-  background-color: #667eea;
+  background-color: #0F4C75;
   color: white;
 }
 
@@ -93,7 +93,7 @@
 .modal input:focus,
 .modal select:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #0F4C75;
 }
 
 .modal-actions {

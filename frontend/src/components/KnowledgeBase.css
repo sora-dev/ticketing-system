@@ -50,7 +50,7 @@
 
 .search-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #0F4C75;
 }
 
 .search-btn {
@@ -77,7 +77,7 @@
 
 .category-select:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #0F4C75;
 }
 
 .loading {
@@ -106,7 +106,7 @@
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   cursor: pointer;
   transition: all 0.3s ease;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #0F4C75;
 }
 
 .article-card:hover {
@@ -130,7 +130,7 @@
 }
 
 .article-category {
-  background: #667eea;
+  background: #0F4C75;
   color: white;
   padding: 4px 8px;
   border-radius: 4px;
@@ -247,7 +247,7 @@
 }
 
 .article-info .category {
-  background: #667eea;
+  background: #0F4C75;
   color: white;
   padding: 6px 12px;
   border-radius: 6px;
@@ -268,6 +268,79 @@
 
 .article-content p {
   margin-bottom: 15px;
+}
+
+/* WYSIWYG Content Styles */
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6 {
+  margin: 20px 0 10px 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.article-content h1 { font-size: 2rem; }
+.article-content h2 { font-size: 1.75rem; }
+.article-content h3 { font-size: 1.5rem; }
+.article-content h4 { font-size: 1.25rem; }
+.article-content h5 { font-size: 1.1rem; }
+.article-content h6 { font-size: 1rem; }
+
+.article-content strong {
+  font-weight: 600;
+}
+
+.article-content em {
+  font-style: italic;
+}
+
+.article-content u {
+  text-decoration: underline;
+}
+
+.article-content s {
+  text-decoration: line-through;
+}
+
+.article-content ul,
+.article-content ol {
+  margin: 10px 0;
+  padding-left: 30px;
+}
+
+.article-content li {
+  margin: 5px 0;
+}
+
+.article-content a {
+  color: #0F4C75;
+  text-decoration: none;
+}
+
+.article-content a:hover {
+  text-decoration: underline;
+}
+
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+
+.article-content .ql-align-center {
+  text-align: center;
+}
+
+.article-content .ql-align-right {
+  text-align: right;
+}
+
+.article-content .ql-align-justify {
+  text-align: justify;
 }
 
 .article-tags {

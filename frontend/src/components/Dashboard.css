@@ -23,11 +23,11 @@
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   text-align: center;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #0F4C75;
 }
 
 .stat-card.total {
-  border-left-color: #667eea;
+  border-left-color: #0F4C75;
 }
 
 .stat-card.open {

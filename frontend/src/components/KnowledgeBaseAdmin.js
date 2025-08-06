@@ -1,5 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 import { API_BASE_URL } from '../utils/api';
 import "./KnowledgeBaseAdmin.css";
 
@@ -339,15 +341,31 @@ const KnowledgeBaseAdmin = () => {
 
               <div className="form-group">
                 <label htmlFor="content">Content *</label>
-                <textarea
-                  id="content"
+                <ReactQuill
+                  theme="snow"
                   value={formData.content}
-                  onChange={(e) =>
-                    setFormData({ ...formData, content: e.target.value })
+                  onChange={(content) =>
+                    setFormData({ ...formData, content })
                   }
-                  required
-                  rows="10"
+                  modules={{
+                    toolbar: [
+                      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                      ['bold', 'italic', 'underline', 'strike'],
+                      [{ 'align': [] }],
+                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                      [{ 'indent': '-1'}, { 'indent': '+1' }],
+                      ['link', 'image'],
+                      [{ 'color': [] }, { 'background': [] }],
+                      ['clean']
+                    ]
+                  }}
+                  formats={[
+                    'header', 'bold', 'italic', 'underline', 'strike',
+                    'align', 'list', 'indent',
+                    'link', 'image', 'color', 'background'
+                  ]}
                   placeholder="Enter the article content..."
+                  style={{ height: '200px', marginBottom: '50px' }}
                 />
               </div>
 

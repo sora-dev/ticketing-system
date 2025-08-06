@@ -28,9 +28,9 @@
 
 .btn-secondary {
   background-color: transparent;
-  color: #667eea;
+  color: #0F4C75;
   padding: 10px 20px;
-  border: 1px solid #667eea;
+  border: 1px solid #0F4C75;
   border-radius: 6px;
   font-size: 0.9rem;
   cursor: pointer;
@@ -39,7 +39,7 @@
 }
 
 .btn-secondary:hover {
-  background-color: #667eea;
+  background-color: #0F4C75;
   color: white;
 }
 
@@ -90,7 +90,7 @@
 .filter-group input:focus,
 .filter-group select:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #0F4C75;
 }
 
 /* Metrics Section */
@@ -107,7 +107,7 @@
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #0F4C75;
 }
 
 .metric-card h3 {
@@ -176,7 +176,7 @@
 .bar {
   width: 100%;
   max-width: 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0F4C75 0%, #764ba2 100%);
   border-radius: 4px 4px 0 0;
   transition: all 0.3s ease;
   cursor: pointer;
@@ -240,7 +240,7 @@
 }
 
 .line-bar.created {
-  background: #667eea;
+  background: #0F4C75;
 }
 
 .line-bar.resolved {
@@ -280,7 +280,7 @@
   height: 200px;
   border-radius: 50%;
   background: conic-gradient(
-    #667eea 0deg 0deg,
+    #0F4C75 0deg 0deg,
     #764ba2 0deg 0deg,
     #f093fb 0deg 0deg,
     #f5576c 0deg 0deg
@@ -310,7 +310,7 @@
 }
 
 .legend-color.created {
-  background: #667eea;
+  background: #0F4C75;
 }
 
 .legend-color.resolved {

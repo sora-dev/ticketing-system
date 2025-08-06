@@ -7,7 +7,7 @@
 
 /* Top Navbar */
 .top-navbar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0F4C75 0%, #3282B8 100%);
   color: white;
   padding: 0 20px;
   display: flex;
@@ -108,13 +108,13 @@
 
 .nav-item:hover {
   background-color: #f8f9fa;
-  color: #667eea;
+  color: #0F4C75;
 }
 
 .nav-item.active {
-  background-color: #667eea;
+  background-color: #0F4C75;
   color: white;
-  border-right: 4px solid #5a6fd8;
+  border-right: 4px solid #0F4C75;
 }
 
 /* Main Content */
@@ -127,7 +127,7 @@
 
 /* Footer */
 .footer {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0F4C75 0%, #3282B8 100%);
   color: white;
   padding: 15px 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -272,7 +272,7 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #0F4C75;
 }
 
 .error-message {
@@ -304,7 +304,7 @@
 }
 
 .btn-primary {
-  background-color: #667eea;
+  background-color: #0F4C75;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -327,9 +327,9 @@
 
 .btn-secondary {
   background-color: transparent;
-  color: #667eea;
+  color: #0F4C75;
   padding: 10px 20px;
-  border: 1px solid #667eea;
+  border: 1px solid #0F4C75;
   border-radius: 6px;
   font-size: 1rem;
   cursor: pointer;
@@ -338,7 +338,7 @@
 }
 
 .btn-secondary:hover {
-  background-color: #667eea;
+  background-color: #0F4C75;
   color: white;
 }
 
@@ -377,7 +377,7 @@
   
   .nav-item.active {
     border-right: none;
-    border-bottom: 3px solid #5a6fd8;
+    border-bottom: 3px solid #0F4C75;
   }
   
   .main-content {

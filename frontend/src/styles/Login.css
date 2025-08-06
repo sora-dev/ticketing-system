@@ -1,6 +1,6 @@
 .login-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0F4C75 0%, #3282B8 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,7 +59,7 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #0F4C75;
 }
 
 .error-message {
@@ -75,7 +75,7 @@
 .login-btn {
   width: 100%;
   padding: 12px;
-  background-color: #667eea;
+  background-color: #0F4C75;
   color: white;
   border: none;
   border-radius: 6px;
@@ -86,7 +86,7 @@
 }
 
 .login-btn:hover:not(:disabled) {
-  background-color: #5a6fd8;
+  background-color: #3282B8;
 }
 
 .login-btn:disabled {
@@ -110,15 +110,15 @@
   margin-top: 20px;
   padding: 10px 20px;
   background-color: transparent;
-  color: #667eea;
-  border: 1px solid #667eea;
+  color: #0F4C75;
+  border: 1px solid #0F4C75;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .back-btn:hover {
-  background-color: #667eea;
+  background-color: #0F4C75;
   color: white;
 }
 

@@ -126,7 +126,7 @@ router.post('/admin', auth, adminAuth, async (req, res) => {
       category,
       tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
       isPublished: isPublished !== undefined ? isPublished : true,
-      createdBy: req.user.id
+      createdBy: req.user._id
     });
     
     await article.save();
@@ -134,6 +134,10 @@ router.post('/admin', auth, adminAuth, async (req, res) => {
     
     res.status(201).json(article);
   } catch (error) {
+    console.error('Error updating knowledge base article:', error);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
     res.status(400).json({ message: error.message });
   }
 });
@@ -141,6 +145,10 @@ router.post('/admin', auth, adminAuth, async (req, res) => {
 // Update article
 router.put('/admin/:id', auth, adminAuth, async (req, res) => {
   try {
+    console.log('PUT request body keys:', Object.keys(req.body));
+    console.log('PUT request params:', req.params);
+    console.log('PUT request user:', req.user ? req.user.name : 'No user');
+    console.log('Content length:', req.body.content ? req.body.content.length : 'No content');
     const { title, content, category, tags, isPublished } = req.body;
     
     const article = await KnowledgeBase.findById(req.params.id);
@@ -153,13 +161,18 @@ router.put('/admin/:id', auth, adminAuth, async (req, res) => {
     article.category = category || article.category;
     article.tags = tags ? tags.split(',').map(tag => tag.trim()) : article.tags;
     article.isPublished = isPublished !== undefined ? isPublished : article.isPublished;
-    article.updatedBy = req.user.id;
+    article.updatedBy = req.user._id;
     
     await article.save();
-    await article.populate(['createdBy', 'updatedBy'], 'name');
+    await article.populate('createdBy', 'name');
+    await article.populate('updatedBy', 'name');
     
     res.json(article);
   } catch (error) {
+    console.error('Error updating knowledge base article:', error);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
     res.status(400).json({ message: error.message });
   }
 });

@@ -88,6 +88,12 @@ const KnowledgeBase = () => {
     return category ? category.label : value;
   };
 
+  const stripHtmlTags = (html) => {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent || tempDiv.innerText || '';
+  };
+
   return (
     <div className="knowledge-base">
       <div className="kb-header">
@@ -146,7 +152,7 @@ const KnowledgeBase = () => {
                   </div>
 
                   <p className="article-preview">
-                    {article.content.substring(0, 150)}...
+                    {stripHtmlTags(article.content).substring(0, 150)}...
                   </p>
 
                   <div className="article-meta">
@@ -193,10 +199,7 @@ const KnowledgeBase = () => {
                 </span>
               </div>
 
-              <div className="article-content">
-                {selectedArticle.content.split("\n").map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
+              <div className="article-content" dangerouslySetInnerHTML={{ __html: selectedArticle.content }}>
               </div>
 
               {selectedArticle.tags && selectedArticle.tags.length > 0 && (
