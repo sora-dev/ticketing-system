@@ -109,6 +109,21 @@ router.post('/login', async (req, res) => {
       { expiresIn: '24h' }
     );
     
+    // Log the successful login event before sending response
+    try {
+      await logAuditEvent({
+        userId: user._id,
+        action: 'login',
+        resource: 'auth',
+        details: `User ${user.name} logged in`,
+        req: req, // Pass the request object
+        userAgent: req.get('User-Agent')
+      });
+    } catch (auditError) {
+      console.error('Audit logging failed:', auditError);
+      // Continue with login even if audit logging fails
+    }
+    
     res.json({
       token,
       user: {
@@ -117,16 +132,6 @@ router.post('/login', async (req, res) => {
         email: user.email,
         role: user.role
       }
-    });
-    
-    // After successful login, log the event (around line 127)
-    await logAuditEvent({
-      userId: user._id,
-      action: 'login',
-      resource: 'auth',
-      details: `User ${user.name} logged in`,
-      req: req, // Pass the request object
-      userAgent: req.get('User-Agent')
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });

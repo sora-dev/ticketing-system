@@ -24,24 +24,36 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Login form submitted');
+    console.log('API_BASE_URL:', API_BASE_URL);
+    console.log('Form data:', formData);
+    
     setLoading(true);
     setError('');
 
     try {
+      console.log('Making login request to:', `${API_BASE_URL}/api/auth/login`);
       const response = await axios.post(`${API_BASE_URL}/api/auth/login`, formData);
+      console.log('Login response received:', response.data);
       
       // Use AuthContext login method instead of direct localStorage
       login(response.data.token, response.data.user);
+      console.log('AuthContext login called');
       
       // Redirect based on user role
       if (response.data.user.role === 'admin') {
+        console.log('Redirecting to admin dashboard');
         navigate('/admin/dashboard');
       } else {
+        console.log('Redirecting to support dashboard');
         navigate('/support/dashboard');
       }
     } catch (error) {
+      console.error('Login error:', error);
+      console.error('Error response:', error.response);
       setError(error.response?.data?.message || 'Login failed. Please try again.');
     } finally {
+      console.log('Setting loading to false');
       setLoading(false);
     }
   };
