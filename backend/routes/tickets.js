@@ -1,8 +1,41 @@
 const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
 const Ticket = require('../models/Ticket');
 const { auth } = require('../middleware/auth');
 const router = express.Router();
 const { logAuditEvent } = require('../utils/auditLogger');
+
+// Configure multer for ticket image uploads
+const uploadsDir = path.join(__dirname, '..', 'uploads', 'ticket-images');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadsDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname) || '.png';
+    const base = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9-_]/g, '_');
+    cb(null, `${base}-${uniqueSuffix}${ext}`);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  if (allowed.includes(file.mimetype)) cb(null, true);
+  else cb(new Error('Only image files are allowed'));
+};
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter
+});
 
 // Get dashboard stats
 router.get('/dashboard', auth, async (req, res) => {
@@ -10,10 +43,20 @@ router.get('/dashboard', auth, async (req, res) => {
     let ticketFilter = {};
     let recentTicketsFilter = {};
     
-    // If user role is 'user', only show their own tickets
+    // Role-based filtering
     if (req.user.role === 'user') {
       ticketFilter = { createdBy: req.user._id };
       recentTicketsFilter = { createdBy: req.user._id };
+    } else if (req.user.role === 'general-manager') {
+      const gmCategories = ['access-request', 'system-error', 'system-config'];
+      ticketFilter = { $or: [
+        { createdBy: req.user._id },
+        { category: { $in: gmCategories } }
+      ] };
+      recentTicketsFilter = { $or: [
+        { createdBy: req.user._id },
+        { category: { $in: gmCategories } }
+      ] };
     }
     
     const totalTickets = await Ticket.countDocuments(ticketFilter);
@@ -48,9 +91,14 @@ router.get('/', auth, async (req, res) => {
   try {
     let filter = {};
     
-    // If user role is 'user', only show tickets they created
+    // Role-based filtering
     if (req.user.role === 'user') {
       filter = { createdBy: req.user._id };
+    } else if (req.user.role === 'general-manager') {
+      filter = { $or: [
+        { createdBy: req.user._id },
+        { category: { $in: ['access-request', 'system-error', 'system-config'] } }
+      ] };
     }
     
     const tickets = await Ticket.find(filter)
@@ -74,6 +122,11 @@ router.get('/reports', auth, async (req, res) => {
     // Role-based filtering
     if (req.user.role === 'user') {
       filter.createdBy = req.user._id;
+    } else if (req.user.role === 'general-manager') {
+      filter.$or = [
+        { createdBy: req.user._id },
+        { category: { $in: ['access-request', 'system-error', 'system-config'] } }
+      ];
     }
     
     // Date range filter
@@ -204,6 +257,11 @@ router.get('/:id', auth, async (req, res) => {
     // If user role is 'user', only allow access to their own tickets
     if (req.user.role === 'user') {
       filter.createdBy = req.user._id;
+    } else if (req.user.role === 'general-manager') {
+      filter.$or = [
+        { createdBy: req.user._id },
+        { category: { $in: ['access-request', 'system-error', 'system-config'] } }
+      ];
     }
     
     const ticket = await Ticket.findOne(filter)
@@ -226,11 +284,12 @@ router.get('/:id', auth, async (req, res) => {
 // Create ticket
 router.post('/', auth, async (req, res) => {
   try {
-    const { title, description, priority, category } = req.body;
+    const { title, description, descriptionHtml, priority, category } = req.body;
     
     const ticket = new Ticket({
       title,
       description,
+      descriptionHtml: descriptionHtml || '',
       priority,
       category,
       createdBy: req.user._id
@@ -261,12 +320,19 @@ router.post('/', auth, async (req, res) => {
 // Update ticket status
 router.patch('/:id', auth, async (req, res) => {
   try {
-    const { status, assignedTo } = req.body;
+    const { status, assignedTo, priority } = req.body;
     const updateData = {};
-    
+
     if (status) updateData.status = status;
     if (assignedTo) updateData.assignedTo = assignedTo;
-    
+    if (priority) {
+      const allowed = ['low', 'medium', 'high', 'urgent'];
+      if (!allowed.includes(priority)) {
+        return res.status(400).json({ message: 'Invalid priority value' });
+      }
+      updateData.priority = priority;
+    }
+
     const ticket = await Ticket.findByIdAndUpdate(
       req.params.id,
       updateData,
@@ -274,22 +340,22 @@ router.patch('/:id', auth, async (req, res) => {
     )
       .populate('createdBy', 'name email')
       .populate('assignedTo', 'name email');
-    
+
     if (!ticket) {
       return res.status(404).json({ message: 'Ticket not found' });
     }
-    
+
     // Add audit logging for ticket updates
     await logAuditEvent({
       userId: req.user.id,
       action: 'update',
       resource: 'ticket',
       resourceId: ticket._id.toString(),
-      details: `Updated ticket: ${ticket.title} - Status: ${status || 'unchanged'}, Assigned: ${assignedTo || 'unchanged'}`,
+      details: `Updated ticket: ${ticket.title} - Status: ${status || 'unchanged'}, Assigned: ${assignedTo || 'unchanged'}, Priority: ${priority || 'unchanged'}`,
       ipAddress: req.ip,
       userAgent: req.get('User-Agent')
     });
-    
+
     res.json(ticket);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -299,28 +365,56 @@ router.patch('/:id', auth, async (req, res) => {
 // Add comment to ticket
 router.post('/:id/comments', auth, async (req, res) => {
   try {
-    const { message } = req.body;
-    
+    const { message, messageHtml } = req.body;
+
+    if (!message && !messageHtml) {
+      return res.status(400).json({ message: 'Comment content is required' });
+    }
+
     const ticket = await Ticket.findById(req.params.id);
     if (!ticket) {
       return res.status(404).json({ message: 'Ticket not found' });
     }
-    
+
     ticket.comments.push({
       user: req.user._id,
-      message,
+      message: message || '',
+      messageHtml: messageHtml || '',
       timestamp: new Date()
     });
-    
+
     await ticket.save();
-    
+
     const updatedTicket = await Ticket.findById(req.params.id)
       .populate('createdBy', 'name email')
       .populate('assignedTo', 'name email')
       .populate('comments.user', 'name email');
-    
+
     res.json(updatedTicket);
   } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Upload ticket image (used by WYSIWYG editor)
+router.post('/upload-image', auth, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image uploaded' });
+    }
+    const publicUrl = `/uploads/ticket-images/${req.file.filename}`;
+    // Optionally, log audit
+    await logAuditEvent({
+      userId: req.user._id,
+      action: 'create',
+      resource: 'ticket_image',
+      resourceId: req.file.filename,
+      details: `Uploaded ticket image: ${req.file.originalname}`,
+      req
+    });
+    res.json({ url: publicUrl });
+  } catch (error) {
+    console.error('Image upload error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });

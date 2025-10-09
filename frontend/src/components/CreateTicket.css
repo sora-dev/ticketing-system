@@ -54,6 +54,21 @@
   min-height: 120px;
 }
 
+/* Quill editor styling for ticket creation */
+.ticket-form .ql-container {
+  min-height: 200px;
+}
+.ticket-form .ql-editor {
+  min-height: 180px;
+}
+.ticket-form .ql-editor img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 8px 0;
+  border-radius: 6px;
+}
+
 .btn-primary {
   background-color: #0F4C75;
   color: white;

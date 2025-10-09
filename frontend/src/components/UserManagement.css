@@ -159,6 +159,11 @@
   color: #2e7d32;
 }
 
+.role.general-manager {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
 .status {
   padding: 4px 8px;
   border-radius: 4px;
@@ -388,3 +393,20 @@
   border-radius: 4px;
   font-size: 14px;
 }
+
+/* Dark Mode Overrides */
+body.dark-mode .user-management { background-color: var(--bg); }
+body.dark-mode .header h1 { color: var(--text); }
+body.dark-mode .btn-secondary { border-color: var(--accent); color: var(--accent); }
+body.dark-mode .btn-secondary:hover { background-color: var(--accent); color: #0b1220; }
+body.dark-mode .modal { background: var(--card); }
+body.dark-mode .modal h2 { color: var(--text); }
+body.dark-mode .modal input,
+body.dark-mode .modal select { background: #0b1220; color: var(--text); border-color: var(--border-color); }
+body.dark-mode .users-table { background: var(--card); box-shadow: none; }
+body.dark-mode .users-table th { background-color: #0b1220; color: var(--text); }
+body.dark-mode .users-table td { border-bottom-color: var(--border-color); color: var(--text); }
+body.dark-mode .users-table tr:hover { background-color: #0b1220; }
+body.dark-mode .dropdown-menu { background: var(--card); border-color: var(--border-color); }
+body.dark-mode .dropdown-item { background: var(--card); color: var(--text); }
+body.dark-mode .dropdown-item:hover { background-color: #0b1220; }

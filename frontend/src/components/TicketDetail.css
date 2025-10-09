@@ -190,6 +190,15 @@
   line-clamp: unset !important;
 }
 
+/* Ensure images in rich HTML description are responsive */
+.ticket-detail .ticket-main .ticket-info .ticket-description .ticket-description-html img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 8px 0;
+  border-radius: 6px;
+}
+
 /* Alternative approach - target any p tag within ticket-description */
 div.ticket-description p,
 .ticket-description > p,
@@ -295,17 +304,18 @@ div.ticket-description p,
 }
 
 .add-comment-form {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 20px;
-  border: 2px dashed #dee2e6;
-  transition: all 0.3s ease;
   margin-top: 20px;
+  transition: all 0.3s ease;
+  /* Remove outer dashed border so Quill’s own border fits cleanly */
+  border: none;
+  padding: 0;
+  background: transparent;
 }
 
-.add-comment-form:focus-within {
+.add-comment-form:focus-within .ql-toolbar.ql-snow,
+.add-comment-form:focus-within .ql-container.ql-snow {
   border-color: #007bff;
-  background: white;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
 }
 
 .form-group {
@@ -371,6 +381,32 @@ div.ticket-description p,
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+/* ReactQuill editor in comments */
+.add-comment-form .ql-toolbar.ql-snow {
+  border: 1px solid #dee2e6;
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+}
+
+.add-comment-form .ql-container.ql-snow {
+  min-height: 160px;
+  border: 1px solid #dee2e6;
+  border-top: 0;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden; /* ensures rounded corners clip editor content */
+}
+
+.add-comment-form .ql-editor {
+  min-height: 140px;
+}
+.comment-message-html img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 8px 0;
+  border-radius: 6px;
 }
 
 .ticket-sidebar {
@@ -468,6 +504,31 @@ div.ticket-description p,
   outline: none;
   border-color: #007bff;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.priority-controls {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f3f4;
+}
+
+.priority-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: white;
+  color: #495057;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.priority-select:focus {
+  outline: none;
+  border-color: #fd7e14; /* orange highlight for priority */
+  box-shadow: 0 0 0 2px rgba(253, 126, 20, 0.1);
 }
 
 .loading,

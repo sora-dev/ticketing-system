@@ -9,6 +9,11 @@ const ticketSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  // Rich HTML content for description rendered in UI
+  descriptionHtml: {
+    type: String,
+    default: ''
+  },
   priority: {
     type: String,
     enum: ['low', 'medium', 'high', 'urgent'],
@@ -38,10 +43,20 @@ const ticketSchema = new mongoose.Schema({
       ref: 'User',
     },
     message: String,
+    // Rich HTML content for comment rendered in UI
+    messageHtml: {
+      type: String,
+      default: ''
+    },
     timestamp: {
       type: Date,
       default: Date.now,
     },
+  }],
+  attachments: [{
+    url: String,
+    filename: String,
+    uploadedAt: { type: Date, default: Date.now }
   }],
 }, {
   timestamps: true,

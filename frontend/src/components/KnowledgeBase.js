@@ -13,14 +13,11 @@ const KnowledgeBase = () => {
 
   const categories = [
     { value: "all", label: "All Categories" },
-    { value: "account-management", label: "Account Management" },
-    { value: "transactions", label: "Transactions" },
-    { value: "cards", label: "Cards & ATM" },
-    { value: "loans", label: "Loans & Credit" },
-    { value: "technical-issues", label: "Technical Issues" },
-    { value: "security", label: "Security" },
-    { value: "mobile-banking", label: "Mobile Banking" },
-    { value: "online-banking", label: "Online Banking" },
+    { value: "hardware", label: "Hardware" },
+    { value: "network", label: "Network" },
+    { value: "software", label: "Software" },
+    { value: "system", label: "System" },
+    { value: "cybersecurity", label: "Cybersecurity" },
     { value: "general", label: "General" },
   ];
 

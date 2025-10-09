@@ -185,6 +185,15 @@ const Reports = () => {
     );
   };
 
+  const formatDateLabel = (isoDate) => {
+    if (!isoDate) return '';
+    // Expecting YYYY-MM-DD; return M/D for compact display
+    const [y, m, d] = isoDate.split('-');
+    const month = String(parseInt(m, 10));
+    const day = String(parseInt(d, 10));
+    return `${month}/${day}`;
+  };
+
   const renderLineChart = (data, title) => {
     if (!data || data.length === 0) return <div className="no-data">No data available</div>;
     
@@ -212,7 +221,7 @@ const Reports = () => {
                       title={`Resolved: ${item.resolved}`}
                     ></div>
                   </div>
-                  <span className="line-label">{item.date}</span>
+                  <span className="line-label" title={item.date}>{formatDateLabel(item.date)}</span>
                 </div>
               );
             })}

@@ -20,6 +20,7 @@ body {
   color: var(--text-dark);
 }
 
+
 .btn-primary {
   background-color: var(--primary-color);
   color: white;

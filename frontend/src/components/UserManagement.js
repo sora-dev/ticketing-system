@@ -217,6 +217,7 @@ const UserManagement = () => {
                 <option value="user">User</option>
                 <option value="support">Support</option>
                 <option value="admin">Admin</option>
+                <option value="general-manager">General Manager</option>
               </select>
               <input
                 type="text"
@@ -266,6 +267,7 @@ const UserManagement = () => {
                 <option value="user">User</option>
                 <option value="support">Support</option>
                 <option value="admin">Admin</option>
+                <option value="general-manager">General Manager</option>
               </select>
               <input
                 type="text"

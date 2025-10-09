@@ -5,6 +5,7 @@
   background-color: #f8f9fa;
 }
 
+
 /* Top Navbar */
 .top-navbar {
   background: linear-gradient(135deg, #0F4C75 0%, #3282B8 100%);
@@ -17,6 +18,7 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   z-index: 1000;
 }
+
 
 .navbar-left h2 {
   margin: 0;
@@ -77,6 +79,7 @@
   z-index: 100;
 }
 
+
 .sidebar-nav {
   padding: 20px 0;
 }
@@ -106,6 +109,7 @@
   gap: 10px;
 }
 
+
 .nav-item:hover {
   background-color: #f8f9fa;
   color: #0F4C75;
@@ -125,6 +129,7 @@
   background-color: #f8f9fa;
 }
 
+
 /* Footer */
 .footer {
   background: linear-gradient(135deg, #0F4C75 0%, #3282B8 100%);
@@ -133,6 +138,7 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
 }
+
 
 .footer-content {
   display: flex;
@@ -214,6 +220,7 @@
   margin: 0;
   color: #333;
 }
+
 
 .close-btn {
   background: none;

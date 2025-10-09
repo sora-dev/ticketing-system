@@ -11,6 +11,7 @@ const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+
   useEffect(() => {
     const verifyAuth = async () => {
       const token = localStorage.getItem('token');
@@ -142,6 +143,7 @@ const Layout = () => {
             <span>Welcome, {user?.name || "User"}</span>
             <span className="user-role">({user?.role || "user"})</span>
           </div>
+          {/* Dark mode toggle removed */}
           <button
             className="nav-btn"
             onClick={() => setShowProfileModal(true)}
