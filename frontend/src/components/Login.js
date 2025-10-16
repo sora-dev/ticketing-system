@@ -101,9 +101,6 @@ const Login = () => {
         </form>
         
         <div className="login-footer">
-          <p>Default Admin Credentials:</p>
-          <p><strong>Email:</strong> admin@ticketing.com</p>
-          <p><strong>Password:</strong> admin123</p>
           <button className="back-btn" onClick={() => navigate('/')}>
             ← Back to Homepage
           </button>

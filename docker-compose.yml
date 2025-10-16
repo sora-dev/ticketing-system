@@ -32,13 +32,13 @@ services:
     build:
       context: ./frontend
       args:
-        - REACT_APP_API_URL=http://itrack.rbi.local
+        - REACT_APP_API_URL=
     container_name: rbi-itrack-frontend
     restart: unless-stopped
     env_file:
       - ./frontend/.env
     environment:
-      - REACT_APP_API_URL=http://itrack.rbi.local
+      - REACT_APP_API_URL=
       - NODE_ENV=production
     depends_on:
       - backend
