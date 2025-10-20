@@ -152,6 +152,13 @@
 /* Ultra-specific selectors to override any conflicting styles */
 .ticket-detail .ticket-main .ticket-info .ticket-description {
   margin-top: 24px !important;
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  -webkit-box-orient: unset !important;
+  overflow: visible !important;
+  max-height: none !important;
+  height: auto !important;
+  text-overflow: unset !important;
 }
 
 .ticket-detail .ticket-main .ticket-info .ticket-description h3 {
@@ -164,7 +171,8 @@
 }
 
 /* Ultra-specific override for description paragraph */
-.ticket-detail .ticket-main .ticket-info .ticket-description p {
+/* Style plain text description only when it is a direct child */
+.ticket-detail .ticket-main .ticket-info .ticket-description > p {
   background: #f8f9fa !important;
   border-radius: 8px !important;
   padding: 20px !important;
@@ -176,7 +184,27 @@
   overflow-wrap: break-word !important;
   hyphens: auto !important;
   margin: 0 !important;
-  /* Aggressive overrides for text truncation */
+}
+
+/* NEW: Single container styling for rich HTML descriptions */
+.ticket-detail .ticket-main .ticket-info .ticket-description .ticket-description-html {
+  background: #f8f9fa !important;
+  border-radius: 8px !important;
+  padding: 20px !important;
+  border-left: 4px solid #007bff !important;
+  box-sizing: border-box !important;
+}
+
+/* Normalize paragraph spacing in rich HTML description */
+.ticket-detail .ticket-main .ticket-info .ticket-description .ticket-description-html p {
+  margin: 0 0 12px 0 !important;
+}
+
+/* Remove previous aggressive p-level overrides to prevent multiple boxes */
+.ticket-detail .ticket-main .ticket-info .ticket-description p {
+  background: transparent !important;
+  border-left: 0 !important;
+  padding: 0 !important;
   display: block !important;
   -webkit-line-clamp: unset !important;
   -webkit-box-orient: unset !important;
@@ -184,10 +212,20 @@
   max-height: none !important;
   height: auto !important;
   text-overflow: unset !important;
-  /* Additional overrides */
   -webkit-box: unset !important;
   box-orient: unset !important;
   line-clamp: unset !important;
+}
+
+/* NEW: Ensure all description content wraps and doesn’t overflow */
+.ticket-detail .ticket-main .ticket-info .ticket-description,
+.ticket-detail .ticket-main .ticket-info .ticket-description *,
+.ticket-detail .ticket-main .ticket-info .ticket-description .ticket-description-html,
+.ticket-detail .ticket-main .ticket-info .ticket-description .ticket-description-html * {
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  hyphens: auto !important;
 }
 
 /* Ensure images in rich HTML description are responsive */
@@ -400,6 +438,254 @@ div.ticket-description p,
 
 .add-comment-form .ql-editor {
   min-height: 140px;
+}
+.comment-message-html img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 8px 0;
+  border-radius: 6px;
+}
+
+.ticket-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 20px;
+}
+
+/* Minimalist Ticket Information */
+.sidebar-card {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e9ecef;
+}
+
+.sidebar-header {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.sidebar-title {
+  margin: 0;
+  color: #495057;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.meta-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meta-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 6px 0;
+  gap: 8px;
+}
+
+.meta-label {
+  font-weight: 500;
+  color: #6c757d;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  min-width: 70px;
+}
+
+.meta-value {
+  color: #2c3e50;
+  font-size: 0.85rem;
+  text-align: right;
+  word-break: break-word;
+  flex: 1;
+}
+
+.status-controls {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f3f4;
+}
+
+.status-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #495057;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: white;
+  color: #495057;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.status-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.priority-controls {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f3f4;
+}
+
+.priority-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: white;
+  color: #495057;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.priority-select:focus {
+  outline: none;
+  border-color: #fd7e14; /* orange highlight for priority */
+  box-shadow: 0 0 0 2px rgba(253, 126, 20, 0.1);
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 1.2rem;
+  color: #6c757d;
+  background: white;
+  border-radius: 12px;
+  margin: 20px;
+}
+
+.error {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .ticket-content {
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ticket-detail {
+    padding: 16px;
+  }
+  
+  .ticket-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .ticket-title {
+    font-size: 1.5rem;
+  }
+  
+  .content-card,
+  .sidebar-card {
+    padding: 16px;
+  }
+  
+  .ticket-sidebar {
+    position: static;
+    order: -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .ticket-detail {
+    padding: 12px;
+  }
+  
+  .content-card,
+  .sidebar-card {
+    padding: 12px;
+  }
+  
+  .ticket-title {
+    font-size: 1.3rem;
+  }
+  
+  .ticket-badges {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .meta-item {
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .meta-value {
+    text-align: left;
+  }
+}
+/* Headings inside rich HTML description */
+.ticket-detail .ticket-main .ticket-info .ticket-description .ticket-description-html h1,
+.ticket-detail .ticket-main .ticket-info .ticket-description .ticket-description-html h2,
+.ticket-detail .ticket-main .ticket-info .ticket-description .ticket-description-html h3,
+.ticket-detail .ticket-main .ticket-info .ticket-description .ticket-description-html h4,
+.ticket-detail .ticket-main .ticket-info .ticket-description .ticket-description-html h5,
+.ticket-detail .ticket-main .ticket-info .ticket-description .ticket-description-html h6 {
+  margin: 20px 0 12px !important;
+  line-height: 1.25 !important;
+  color: #2c3e50 !important;
+  font-weight: 700 !important;
+}
+
+/* Normalize paragraph spacing in rich HTML description */
+.ticket-detail .ticket-main .ticket-info .ticket-description .ticket-description-html p {
+  margin: 0 0 12px 0 !important;
+}
+
+/* Do NOT style Quill blank lines (p with only a <br>) */
+.ticket-detail .ticket-main .ticket-info .ticket-description .ticket-description-html p:has(> br:only-child) {
+  background: transparent !important;
+  border-left: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 0 !important;
 }
 .comment-message-html img {
   max-width: 100%;

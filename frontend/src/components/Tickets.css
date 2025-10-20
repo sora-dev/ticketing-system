@@ -168,7 +168,7 @@
   animation: pulse 2s infinite;
 }
 
-.ticket-description {
+.tickets-page .ticket-description {
   color: #666;
   margin-bottom: 15px;
   line-height: 1.5;
@@ -176,8 +176,9 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  overflow-y: auto;
-  max-height: 700px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
 
 .ticket-meta {
